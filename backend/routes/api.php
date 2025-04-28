@@ -66,11 +66,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/acquisitions/urgencies', [AcquisitionController::class, 'getUrgencies']);
     Route::apiResource('acquisitions', AcquisitionController::class);
 
-    /* // Issues
-    Route::get('/issues/priorities', [IssueController::class, 'getPriorities']);
-    Route::get('/issues/statuses', [IssueController::class, 'getStatuses']);
-    Route::apiResource('issues', IssueController::class); */
-
     // Issues
     Route::prefix('issues')->group(function () {
         Route::get('/', [IssueController::class, 'index']);
@@ -85,17 +80,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/{id}/mark-as-resolved', [IssueController::class, 'markAsResolved']);
     });
 
-    /* // Issues
-    Route::get('/priorities', [IssueController::class, 'getPriorities']);
-    Route::get('/statuses', [IssueController::class, 'getStatuses']);
-    Route::get('/stats', [IssueController::class, 'getStats']);
-    Route::apiResource('/', IssueController::class);
-    Route::put('/{issue}/take-charge', [IssueController::class, 'takeCharge']);
-    Route::put('/{issue}/mark-as-resolved', [IssueController::class, 'markAsResolved']); */
-
-
-    // Checkouts
+    // Checkouts / Return
     Route::get('/checkouts/statuses', [CheckoutController::class, 'getStatuses']);
+    Route::get('/checkouts/stats', [CheckoutController::class, 'getStats']);
+    Route::post('/checkouts/update-overdue', [CheckoutController::class, 'updateOverdue']);
     Route::apiResource('checkouts', CheckoutController::class);
 
     // Notifications
@@ -110,5 +98,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/users/{user}', [UserController::class, 'update']); // Mettre a jour l'utilisateur
         Route::delete('/users/{user}', [UserController::class, 'destroy']); // Supprimer
         Route::put('/users/{user}/activate', [UserController::class, 'activate']);// Activate user
+        Route::apiResource('users', UserController::class);
     });
 });

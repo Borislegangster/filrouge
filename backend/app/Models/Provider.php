@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Provider extends Model
 {
@@ -14,7 +15,15 @@ class Provider extends Model
         'phone',
         'address',
         'description',
+        'services',
+        'contract_end_date',
         'is_active'
+    ];
+
+    protected $casts = [
+        'services' => 'array',
+        'is_active' => 'boolean',
+        'contract_end_date' => 'date'
     ];
 
     /**
@@ -31,5 +40,15 @@ class Provider extends Model
     public function acquisitions(): HasMany
     {
         return $this->hasMany(Acquisition::class);
+    }
+
+    /**
+     * Get the status as a human-readable text.
+     */
+    protected function status(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->is_active ? 'Actif' : 'Inactif',
+        );
     }
 }

@@ -8,6 +8,7 @@ use App\Models\Equipment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class CheckoutController extends Controller
 {
@@ -32,8 +33,16 @@ class CheckoutController extends Controller
         }
 
         if ($request->has('search')) {
-            $query->whereHas('equipment', function($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%');
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->whereHas('equipment', function($subQ) use ($search) {
+                    $subQ->where('name', 'like', '%' . $search . '%');
+                })
+                ->orWhereHas('user', function($subQ) use ($search) {
+                    $subQ->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('email', 'like', '%' . $search . '%');
+                })
+                ->orWhere('purpose', 'like', '%' . $search . '%');
             });
         }
 
@@ -43,7 +52,7 @@ class CheckoutController extends Controller
 
         // Pagination
         $perPage = $request->get('per_page', 10);
-        $checkouts = $query->paginate($perPage);
+        $checkouts = $query->orderBy('checkout_date', 'desc')->paginate($perPage);
 
         return response()->json($checkouts);
     }
@@ -121,7 +130,7 @@ class CheckoutController extends Controller
         // Si on retourne l'équipement, mettre à jour checked_in_by et le statut de l'équipement
         if ($oldStatus === 'En cours' && $newStatus === 'Retourné') {
             $request->merge(['checked_in_by' => Auth::id()]);
-            $request->merge(['actual_return_date' => now()]);
+            $request->merge(['actual_return_date' => $request->actual_return_date ?? now()]);
 
             // Mettre à jour le statut de l'équipement
             $equipment = Equipment::findOrFail($checkout->equipment_id);
@@ -163,5 +172,48 @@ class CheckoutController extends Controller
         ];
 
         return response()->json($statuses);
+    }
+
+    /**
+     * Update the status of overdue checkouts.
+     */
+    public function updateOverdue()
+    {
+        $today = Carbon::now()->startOfDay();
+        
+        $overdueCheckouts = Checkout::where('status', 'En cours')
+            ->whereDate('expected_return_date', '<', $today)
+            ->get();
+            
+        $updated = 0;
+        
+        foreach ($overdueCheckouts as $checkout) {
+            $checkout->update(['status' => 'En retard']);
+            $updated++;
+        }
+        
+        return response()->json([
+            'message' => $updated . ' prêts ont été marqués comme en retard',
+            'updated_count' => $updated
+        ]);
+    }
+
+    /**
+     * Get checkout statistics.
+     */
+    public function getStats()
+    {
+        $today = Carbon::today();
+        
+        return response()->json([
+            'active' => Checkout::where('status', 'En cours')->count(),
+            'late' => Checkout::where('status', 'En retard')->count(),
+            'returnedToday' => Checkout::where('status', 'Retourné')
+                ->whereDate('actual_return_date', $today)
+                ->count(),
+            'upcoming' => Checkout::where('status', 'En cours')
+                ->whereDate('expected_return_date', '<=', $today->addDays(3))
+                ->count()
+        ]);
     }
 }
