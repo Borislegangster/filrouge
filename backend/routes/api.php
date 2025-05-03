@@ -38,10 +38,13 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route pour récupérer l'utilisateur authentifié
     Route::get('/user', [AuthController::class, 'user']);
 
-    // User Profile Routes
+    // User Profile Routes (Utilisation de UserSettingController)
     Route::prefix('user-profile')->group(function () {
-        Route::get('/', [UserSettingController::class, 'getUserProfile']);
-        Route::put('/', [UserSettingController::class, 'updateProfile']);
+        Route::get('/', [UserSettingController::class, 'getUserProfile']); // GET pour récupérer
+        // Utilisez POST si vous envoyez _method=PUT avec FormData
+        Route::post('/', [UserSettingController::class, 'updateProfile']); // POST pour mettre à jour (avec _method=PUT)
+        // Ou utilisez PUT si votre frontend peut envoyer PUT avec FormData (moins standard)
+        // Route::put('/', [UserSettingController::class, 'updateProfile']); // PUT pour mettre à jour
     });
 
     // Logout

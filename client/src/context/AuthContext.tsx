@@ -8,6 +8,9 @@ interface User {
   email: string;
   role: 'administrateur' | 'gestionnaire' | 'formateur';
   is_active?: boolean;
+  avatar_url?: string | null;
+  phone?: string | null;
+  address?: string | null;
 }
 
 interface AuthContextType {
@@ -17,6 +20,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   loading: boolean;
   error?: string;
+  updateUser: (userData: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,6 +30,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
   const navigate = useNavigate();
+  const updateUser = (userData: Partial<User>) => {
+    setUser(prev => prev ? {...prev, ...userData} : null);
+  };
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -89,7 +96,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       logout,
       isAuthenticated: !!user,
       loading,
-      error
+      error,
+      updateUser
     }}>
       {children}
     </AuthContext.Provider>
