@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import { Plus, CircleAlert, Settings, House, Clock, CircleCheckBig, MoveRight, X } from 'lucide-react';
+// import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 interface DashboardProps {
   darkMode: boolean;
 }
 
 export default function Dashboard({ darkMode }: DashboardProps) {
+  const { user } = useAuth();
+  // const navigate = useNavigate();
   const [quickAccessOpen, setQuickAccessOpen] = useState(false);
 
   const statsCards = [
@@ -40,9 +44,19 @@ export default function Dashboard({ darkMode }: DashboardProps) {
   ];
 
   const quickActions = [
-    { icon: Plus, text: 'Ajouter un équipement', color: 'bg-blue-600 hover:bg-blue-700' },
+    ...(user?.role !== 'formateur'
+          ? [
+              { icon: Plus, text: 'Ajouter un équipement', color: 'bg-blue-600 hover:bg-blue-700' },
+            ]
+          : []
+        ),
     { icon: CircleAlert, text: 'Signaler une panne', color: 'bg-red-500 hover:bg-red-600' },
-    { icon: House, text: 'Gérer les salles', color: 'bg-green-500 hover:bg-green-600' },
+    ...(user?.role !== 'formateur'
+      ? [
+          { icon: House, text: 'Gérer les salles', color: 'bg-green-500 hover:bg-green-600' },
+        ]
+      : []
+    ),
     { icon: Clock, text: 'Demande d\'acquisition', color: 'bg-amber-500 hover:bg-amber-600' },
   ];
 

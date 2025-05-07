@@ -67,6 +67,11 @@ export default function CheckoutDetailsModal({ isOpen, onClose, checkout, darkMo
             <div className="flex items-center">
               <Package className={`w-5 h-5 mr-2 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
               <span>{checkout.equipment.name}</span>
+              {checkout.equipment.serial_number && (
+                <span className={`ml-2 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  ({checkout.equipment.serial_number})
+                </span>
+              )}
             </div>
           </div>
           <div className="flex items-center">
@@ -87,6 +92,9 @@ export default function CheckoutDetailsModal({ isOpen, onClose, checkout, darkMo
                   <span className="text-sm font-medium">Emprunteur</span>
                 </div>
                 <p>{checkout.user.name}</p>
+                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {checkout.user.email}
+                </p>
               </div>
               <div className="mb-3">
                 <div className="flex items-center mb-1">
@@ -116,7 +124,7 @@ export default function CheckoutDetailsModal({ isOpen, onClose, checkout, darkMo
                   <span className="text-sm font-medium">Date de sortie</span>
                 </div>
                 <p>{formatDate(checkout.checkout_date)}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                   Par: {checkout.checkedOutBy.name}
                 </p>
               </div>
@@ -137,7 +145,7 @@ export default function CheckoutDetailsModal({ isOpen, onClose, checkout, darkMo
                   </div>
                   <p>{formatDate(checkout.actual_return_date)}</p>
                   {checkout.checkedInBy && (
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                       Par: {checkout.checkedInBy.name}
                     </p>
                   )}

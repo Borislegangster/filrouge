@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { X, Info, CalendarIcon, Package, User, ArrowLeftRight } from 'lucide-react';
 import { returnEquipment, Checkout } from '../../api/checkoutService';
+import { useAuth } from '../../context/AuthContext';
+import { toast } from 'react-toastify';
 
 interface ReturnModalProps {
   isOpen: boolean;
@@ -11,6 +13,7 @@ interface ReturnModalProps {
 }
 
 export default function ReturnModal({ isOpen, onClose, onSuccess, checkout, darkMode }: ReturnModalProps) {
+  const { user } = useAuth();
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,16 +27,11 @@ export default function ReturnModal({ isOpen, onClose, onSuccess, checkout, dark
       setLoading(true);
       setError(null);
       
-      // Validation
-      if (!notes.trim()) {
-        setError('Veuillez ajouter des notes sur l\'état de l\'équipement');
-        return;
-      }
-
       await returnEquipment(checkout.id, notes);
       onSuccess();
       onClose();
-      setNotes(''); // Reset notes after successful return
+      setNotes('');
+      toast.success('Retour enregistré avec succès');
     } catch (err: any) {
       if (err.response?.data?.error) {
         setError(err.response.data.error);
@@ -47,6 +45,10 @@ export default function ReturnModal({ isOpen, onClose, onSuccess, checkout, dark
   };
 
   if (!isOpen || !checkout) return null;
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('fr-FR');
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -89,14 +91,14 @@ export default function ReturnModal({ isOpen, onClose, onSuccess, checkout, dark
               <div className="text-sm text-gray-500 dark:text-gray-400">Sortie</div>
               <div className="flex items-center">
                 <CalendarIcon className="w-4 h-4 mr-1" />
-                {new Date(checkout.checkout_date).toLocaleDateString()}
+                {formatDate(checkout.checkout_date)}
               </div>
             </div>
             <div>
               <div className="text-sm text-gray-500 dark:text-gray-400">Retour prévu</div>
               <div className="flex items-center">
                 <CalendarIcon className="w-4 h-4 mr-1" />
-                {new Date(checkout.expected_return_date).toLocaleDateString()}
+                {formatDate(checkout.expected_return_date)}
               </div>
             </div>
           </div>

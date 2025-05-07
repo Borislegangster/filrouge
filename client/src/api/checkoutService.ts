@@ -1,16 +1,17 @@
 import axios from './api';
 
-// Types
 export interface Checkout {
   id: number;
   equipment: {
     id: number;
     name: string;
     status: string;
+    serial_number?: string;
   };
   user: {
     id: number;
     name: string;
+    email: string;
   };
   checkedOutBy: {
     id: number;
@@ -61,7 +62,6 @@ export interface PaginatedResponse<T> {
   total: number;
 }
 
-// API calls
 export const fetchCheckouts = async (filters: CheckoutFilters = {}): Promise<PaginatedResponse<Checkout>> => {
   try {
     const response = await axios.get('/api/v1/checkouts', { params: filters });
@@ -141,6 +141,16 @@ export const fetchCheckoutStats = async (): Promise<CheckoutStats> => {
     return response.data;
   } catch (error) {
     console.error('Error fetching checkout stats:', error);
+    throw error;
+  }
+};
+
+export const updateOverdueCheckouts = async (): Promise<{ message: string, updated_count: number }> => {
+  try {
+    const response = await axios.post('/api/v1/checkouts/update-overdue');
+    return response.data;
+  } catch (error) {
+    console.error('Error updating overdue checkouts:', error);
     throw error;
   }
 };

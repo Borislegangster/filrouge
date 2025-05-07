@@ -12,14 +12,16 @@ use Carbon\Carbon;
 
 class CheckoutController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
+        $user = Auth::user();
         $query = Checkout::query();
 
-        // Filtres
+        // Filtres selon le rôle
+        if ($user->role === 'formateur') {
+            $query->where('user_id', $user->id);
+        }
+
         if ($request->has('status')) {
             $query->where('status', $request->status);
         }
@@ -28,7 +30,7 @@ class CheckoutController extends Controller
             $query->where('equipment_id', $request->equipment_id);
         }
 
-        if ($request->has('user_id')) {
+        if ($request->has('user_id') && ($user->role === 'administrateur' || $user->role === 'gestionnaire')) {
             $query->where('user_id', $request->user_id);
         }
 
@@ -57,17 +59,19 @@ class CheckoutController extends Controller
         return response()->json($checkouts);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
+        $user = Auth::user();
+        if (!in_array($user->role, ['administrateur', 'gestionnaire'])) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'equipment_id' => 'required|exists:equipment,id',
             'user_id' => 'required|exists:users,id',
             'checkout_date' => 'required|date',
             'expected_return_date' => 'required|date|after:checkout_date',
-            'purpose' => 'required|string',
+            'purpose' => 'required|string|max:255',
             'notes' => 'nullable|string',
         ]);
 
@@ -75,47 +79,49 @@ class CheckoutController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // Vérifier si l'équipement est disponible
         $equipment = Equipment::findOrFail($request->equipment_id);
         if ($equipment->status !== 'Fonctionnel') {
             return response()->json(['error' => 'Cet équipement n\'est pas disponible pour le prêt.'], 422);
         }
 
-        // Créer l'enregistrement de prêt
         $data = $request->all();
         $data['status'] = 'En cours';
-        $data['checked_out_by'] = Auth::id();
+        $data['checked_out_by'] = $user->id;
 
         $checkout = Checkout::create($data);
 
-        // Mettre à jour le statut de l'équipement
         $equipment->update(['status' => 'Réservé']);
 
         return response()->json($checkout->load(['equipment', 'user', 'checkedOutBy']), 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         $checkout = Checkout::with(['equipment', 'user', 'checkedOutBy', 'checkedInBy'])->findOrFail($id);
+        
+        $user = Auth::user();
+        if ($user->role === 'formateur' && $checkout->user_id !== $user->id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         return response()->json($checkout);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
+        $user = Auth::user();
+        if (!in_array($user->role, ['administrateur', 'gestionnaire'])) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'equipment_id' => 'sometimes|required|exists:equipment,id',
             'user_id' => 'sometimes|required|exists:users,id',
             'checkout_date' => 'sometimes|required|date',
             'expected_return_date' => 'sometimes|required|date|after:checkout_date',
             'actual_return_date' => 'nullable|date',
-            'purpose' => 'sometimes|required|string',
-            'status' => 'sometimes|required|string',
+            'purpose' => 'sometimes|required|string|max:255',
+            'status' => 'sometimes|required|string|in:En cours,Retourné,En retard',
             'notes' => 'nullable|string',
         ]);
 
@@ -127,12 +133,10 @@ class CheckoutController extends Controller
         $oldStatus = $checkout->status;
         $newStatus = $request->status ?? $oldStatus;
 
-        // Si on retourne l'équipement, mettre à jour checked_in_by et le statut de l'équipement
         if ($oldStatus === 'En cours' && $newStatus === 'Retourné') {
-            $request->merge(['checked_in_by' => Auth::id()]);
+            $request->merge(['checked_in_by' => $user->id]);
             $request->merge(['actual_return_date' => $request->actual_return_date ?? now()]);
 
-            // Mettre à jour le statut de l'équipement
             $equipment = Equipment::findOrFail($checkout->equipment_id);
             $equipment->update(['status' => 'Fonctionnel']);
         }
@@ -142,14 +146,15 @@ class CheckoutController extends Controller
         return response()->json($checkout->load(['equipment', 'user', 'checkedOutBy', 'checkedInBy']));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
+        $user = Auth::user();
+        if (!in_array($user->role, ['administrateur', 'gestionnaire'])) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         $checkout = Checkout::findOrFail($id);
 
-        // Si le prêt est en cours, remettre l'équipement en état fonctionnel
         if ($checkout->status === 'En cours') {
             $equipment = Equipment::findOrFail($checkout->equipment_id);
             $equipment->update(['status' => 'Fonctionnel']);
@@ -160,23 +165,15 @@ class CheckoutController extends Controller
         return response()->json(null, 204);
     }
 
-    /**
-     * Get checkout statuses.
-     */
     public function getStatuses()
     {
-        $statuses = [
+        return response()->json([
             'En cours',
             'Retourné',
             'En retard'
-        ];
-
-        return response()->json($statuses);
+        ]);
     }
 
-    /**
-     * Update the status of overdue checkouts.
-     */
     public function updateOverdue()
     {
         $today = Carbon::now()->startOfDay();
@@ -198,20 +195,24 @@ class CheckoutController extends Controller
         ]);
     }
 
-    /**
-     * Get checkout statistics.
-     */
     public function getStats()
     {
         $today = Carbon::today();
+        $user = Auth::user();
+        
+        $query = Checkout::query();
+        
+        if ($user->role === 'formateur') {
+            $query->where('user_id', $user->id);
+        }
         
         return response()->json([
-            'active' => Checkout::where('status', 'En cours')->count(),
-            'late' => Checkout::where('status', 'En retard')->count(),
-            'returnedToday' => Checkout::where('status', 'Retourné')
+            'active' => $query->clone()->where('status', 'En cours')->count(),
+            'late' => $query->clone()->where('status', 'En retard')->count(),
+            'returnedToday' => $query->clone()->where('status', 'Retourné')
                 ->whereDate('actual_return_date', $today)
                 ->count(),
-            'upcoming' => Checkout::where('status', 'En cours')
+            'upcoming' => $query->clone()->where('status', 'En cours')
                 ->whereDate('expected_return_date', '<=', $today->addDays(3))
                 ->count()
         ]);

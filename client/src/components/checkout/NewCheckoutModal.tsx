@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { X, CalendarIcon, Info } from 'lucide-react';
 import { formatISO } from 'date-fns';
-import { createCheckout } from '../../api/checkoutService';
+import { createCheckout, CheckoutData } from '../../api/checkoutService';
 import { fetchAvailableEquipment, Equipment } from '../../api/equipmentService';
 import { fetchActiveUsers, User } from '../../api/userService';
+import { useAuth } from '../../context/AuthContext';
+import { toast } from 'react-toastify';
 
 interface NewCheckoutModalProps {
   isOpen: boolean;
@@ -13,6 +15,7 @@ interface NewCheckoutModalProps {
 }
 
 export default function NewCheckoutModal({ isOpen, onClose, onSuccess, darkMode }: NewCheckoutModalProps) {
+  const { user } = useAuth();
   const [equipment, setEquipment] = useState<Equipment[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
@@ -20,7 +23,7 @@ export default function NewCheckoutModal({ isOpen, onClose, onSuccess, darkMode 
   const [searchTerm, setSearchTerm] = useState('');
   const [userSearchTerm, setUserSearchTerm] = useState('');
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<CheckoutData>({
     equipment_id: '',
     user_id: '',
     checkout_date: formatISO(new Date(), { representation: 'date' }),
@@ -85,7 +88,7 @@ export default function NewCheckoutModal({ isOpen, onClose, onSuccess, darkMode 
     e.preventDefault();
     setError(null);
   
-    // Form validation
+    // Validation
     if (!formData.equipment_id || !formData.user_id || !formData.checkout_date || !formData.expected_return_date || !formData.purpose) {
       setError('Veuillez remplir tous les champs obligatoires');
       return;
@@ -108,8 +111,10 @@ export default function NewCheckoutModal({ isOpen, onClose, onSuccess, darkMode 
       });
       onSuccess();
       onClose();
+      toast.success('Sortie enregistrée avec succès');
     } catch (err: any) {
-      // ... (gestion des erreurs existante)
+      setError(err.response?.data?.error || 'Une erreur est survenue lors de l\'enregistrement');
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -159,6 +164,7 @@ export default function NewCheckoutModal({ isOpen, onClose, onSuccess, darkMode 
                     ? 'focus:ring-blue-500' 
                     : 'focus:ring-blue-300'}`}
                   disabled={loading}
+                  required
                 >
                   <option value="">Sélectionnez un équipement</option>
                   {equipment.map(item => (
@@ -207,6 +213,7 @@ export default function NewCheckoutModal({ isOpen, onClose, onSuccess, darkMode 
                     ? 'focus:ring-blue-500' 
                     : 'focus:ring-blue-300'}`}
                   disabled={loading}
+                  required
                 >
                   <option value="">Sélectionnez un utilisateur</option>
                   {users.map(user => (
@@ -259,6 +266,7 @@ export default function NewCheckoutModal({ isOpen, onClose, onSuccess, darkMode 
                     ? 'focus:ring-blue-500' 
                     : 'focus:ring-blue-300'}`}
                   disabled={loading}
+                  required
                 />
               </div>
             </div>
@@ -285,6 +293,7 @@ export default function NewCheckoutModal({ isOpen, onClose, onSuccess, darkMode 
                     ? 'focus:ring-blue-500' 
                     : 'focus:ring-blue-300'}`}
                   disabled={loading}
+                  required
                 />
               </div>
             </div>
@@ -308,6 +317,7 @@ export default function NewCheckoutModal({ isOpen, onClose, onSuccess, darkMode 
                 ? 'focus:ring-blue-500' 
                 : 'focus:ring-blue-300'}`}
               disabled={loading}
+              required
             />
           </div>
 
