@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('profile_picture')->nullable(); // URL to the profile picture
             $table->string('phone')->nullable(); // Phone number
             $table->string('address')->nullable(); // Address
-            $table->string('role'); // 'admin', 'gestionnaire', 'formateur'
+            $table->string('role'); // 'administrateur', 'gestionnaire', 'formateur'
             $table->rememberToken();
             $table->timestamps();
         });
