@@ -50,7 +50,7 @@
         <p>Voici votre code de vérification : <strong style="font-size: 18px;">{{ $code }}</strong></p>
         <p><em>Ce code expirera dans 48 heures.</em></p>
 
-        <a href="{{ env('FRONTEND_URL') }}/verify-invitation?token={{ $token }}" class="button">
+        <a href="{{ env('FRONTEND_URL') }}/verify-code?token={{ $token }}" class="button">
             Valider mon invitation
         </a>
 
