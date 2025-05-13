@@ -1,9 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\V1\AuthController;
-use App\Http\Controllers\API\V1\InvitationController;
+use App\Http\Controllers\API\V1\UserController;
 use App\Http\Controllers\API\V1\RoomController;
 use App\Http\Controllers\API\V1\EquipmentController;
 use App\Http\Controllers\API\V1\ProviderController;
@@ -11,96 +10,57 @@ use App\Http\Controllers\API\V1\AcquisitionController;
 use App\Http\Controllers\API\V1\IssueController;
 use App\Http\Controllers\API\V1\CheckoutController;
 use App\Http\Controllers\API\V1\NotificationController;
-use App\Http\Controllers\API\V1\UserController;
-use App\Http\Controllers\API\V1\UserSettingController;
 
-// CSRF cookie route
-Route::get('/sanctum/csrf-cookie', function (Request $request) {
-    return response()->noContent();
-});
-
-/********************************************* Routes publiques *************************************************/
-// Vérification de l'invitation
-Route::post('/verify-invitation', [InvitationController::class, 'verify']);
-// Login
+// Routes publiques
 Route::post('/login', [AuthController::class, 'login']);
-// Register
-Route::post('/register', [AuthController::class, 'completeProfile']);
-// Forgot Password
+Route::post('/register', [AuthController::class, 'register']);
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-// Verify Code
-Route::post('/verify-code', [AuthController::class, 'verifyCode']);
-// Reset Password
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+Route::post('/verify-code', [AuthController::class, 'verifyCode']);
 
-/********************************************* Routes protégées *************************************************/
+// Routes protégées
 Route::middleware('auth:sanctum')->group(function () {
-    // Route pour récupérer l'utilisateur authentifié
+    // Auth
     Route::get('/user', [AuthController::class, 'user']);
-
-    // User Profile Routes (Utilisation de UserSettingController)
-    Route::prefix('user-profile')->group(function () {
-        Route::get('/', [UserSettingController::class, 'getUserProfile']); // GET pour récupérer
-        // Utilisez POST si vous envoyez _method=PUT avec FormData
-        Route::post('/', [UserSettingController::class, 'updateProfile']); // POST pour mettre à jour (avec _method=PUT)
-        // Ou utilisez PUT si votre frontend peut envoyer PUT avec FormData (moins standard)
-        // Route::put('/', [UserSettingController::class, 'updateProfile']); // PUT pour mettre à jour
-    });
-
-    // Logout
     Route::post('/logout', [AuthController::class, 'logout']);
-
-    // Invitation
-    Route::apiResource('invitations', InvitationController::class)->except(['create', 'edit']);
-
+    
+    // Users
+    Route::apiResource('users', UserController::class);
+    Route::put('/users/{user}/activate', [UserController::class, 'activate']);
+    
     // Rooms
     Route::apiResource('rooms', RoomController::class);
-
+    
     // Equipment
     Route::get('/equipment/types', [EquipmentController::class, 'getTypes']);
     Route::get('/equipment/statuses', [EquipmentController::class, 'getStatuses']);
     Route::apiResource('equipment', EquipmentController::class);
-
+    
     // Providers
     Route::apiResource('providers', ProviderController::class);
-
+    
     // Acquisitions
     Route::get('/acquisitions/statuses', [AcquisitionController::class, 'getStatuses']);
     Route::get('/acquisitions/urgencies', [AcquisitionController::class, 'getUrgencies']);
     Route::apiResource('acquisitions', AcquisitionController::class);
-
+    
     // Issues
-    Route::prefix('issues')->group(function () {
-        Route::get('/', [IssueController::class, 'index']);
-        Route::post('/', [IssueController::class, 'store']);
-        Route::get('/{id}', [IssueController::class, 'show']);
-        Route::put('/{id}', [IssueController::class, 'update']);
-        Route::delete('/{id}', [IssueController::class, 'destroy']);
-        Route::get('/priorities', [IssueController::class, 'getPriorities']);
-        Route::get('/statuses', [IssueController::class, 'getStatuses']);
-        Route::get('/stats', [IssueController::class, 'stats']);
-        Route::post('/{id}/take-charge', [IssueController::class, 'takeCharge']);
-        Route::post('/{id}/mark-as-resolved', [IssueController::class, 'markAsResolved']);
-    });
-
-    // Checkouts / Return
+    Route::get('/issues/priorities', [IssueController::class, 'getPriorities']);
+    Route::get('/issues/statuses', [IssueController::class, 'getStatuses']);
+    Route::get('/issues/stats', [IssueController::class, 'stats']);
+    Route::post('/issues/{id}/take-charge', [IssueController::class, 'takeCharge']);
+    Route::post('/issues/{id}/mark-as-resolved', [IssueController::class, 'markAsResolved']);
+    Route::apiResource('issues', IssueController::class);
+    
+    // Checkouts
     Route::get('/checkouts/statuses', [CheckoutController::class, 'getStatuses']);
     Route::get('/checkouts/stats', [CheckoutController::class, 'getStats']);
     Route::post('/checkouts/update-overdue', [CheckoutController::class, 'updateOverdue']);
     Route::apiResource('checkouts', CheckoutController::class);
-
+    
     // Notifications
     Route::get('/notifications/types', [NotificationController::class, 'getTypes']);
     Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadCount']);
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
     Route::apiResource('notifications', NotificationController::class);
-
-    // Utilisateurs (admin & gestionnaire)
-    Route::middleware(['role:administrateur,gestionnaire'])->group(function () {
-        Route::get('/users', [UserController::class, 'index']); // Liste
-        Route::put('/users/{user}', [UserController::class, 'update']); // Mettre a jour l'utilisateur
-        Route::delete('/users/{user}', [UserController::class, 'destroy']); // Supprimer
-        Route::put('/users/{user}/activate', [UserController::class, 'activate']);// Activate user
-        Route::apiResource('users', UserController::class);
-    });
 });
