@@ -96,7 +96,7 @@ export default function Sidebar({ closeSidebar, darkMode }: SidebarProps) {
           >
           <div className="h-10 w-10 overflow-hidden rounded-full bg-gray-300">
             <img
-              src={user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=random&color=fff&length=2&bold=true`}
+              src={user?.avatarUrl || `https://ui-avatars.com/api/?name=${user?.name}&background=random&color=fff&length=2&bold=true`}
               className="h-full w-full object-cover"
               alt={`Avatar de ${user?.name}`}
             />

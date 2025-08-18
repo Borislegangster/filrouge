@@ -8,7 +8,7 @@ interface User {
   status?: string;
   is_active?: boolean;
   last_login?: string;
-  avatar_url?: string;
+  avatarUrl?: string;
 }
 
 interface InvitationData {

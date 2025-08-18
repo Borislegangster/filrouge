@@ -80,7 +80,7 @@ export default function Header({ openSidebar, darkMode, toggleDarkMode }: Header
           aria-label="Profil utilisateur"
         >
           <img
-              src={user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=random&color=fff&length=2&bold=true`}
+              src={user?.avatarUrl || `https://ui-avatars.com/api/?name=${user?.name}&background=random&color=fff&length=2&bold=true`}
               className="h-full w-full object-cover rounded-full"
               alt={`Avatar de ${user?.name}`}
             />

@@ -1,15 +1,11 @@
 import { useState } from 'react';
 import { Plus, CircleAlert, Settings, House, Clock, CircleCheckBig, MoveRight, X } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 
 interface DashboardProps {
   darkMode: boolean;
 }
 
 export default function Dashboard({ darkMode }: DashboardProps) {
-  const { user } = useAuth();
-  const navigate = useNavigate();
   const [quickAccessOpen, setQuickAccessOpen] = useState(false);
 
   const statsCards = [
@@ -44,20 +40,10 @@ export default function Dashboard({ darkMode }: DashboardProps) {
   ];
 
   const quickActions = [
-    ...(user?.role !== 'formateur'
-          ? [
-              { icon: Plus, text: 'Ajouter un équipement', color: 'bg-blue-600 hover:bg-blue-700', path: '/equipments' },
-            ]
-          : []
-        ),
-    { icon: CircleAlert, text: 'Signaler une panne', color: 'bg-red-500 hover:bg-red-600', path: '/issues' },
-    ...(user?.role !== 'formateur'
-      ? [
-          { icon: House, text: 'Gérer les salles', color: 'bg-green-500 hover:bg-green-600', path: '/rooms' },
-        ]
-      : []
-    ),
-    { icon: Clock, text: 'Demande d\'acquisition', color: 'bg-amber-500 hover:bg-amber-600', path: '/acquisitions' },
+    { icon: Plus, text: 'Ajouter un équipement', color: 'bg-blue-600 hover:bg-blue-700' },
+    { icon: CircleAlert, text: 'Signaler une panne', color: 'bg-red-500 hover:bg-red-600' },
+    { icon: House, text: 'Gérer les salles', color: 'bg-green-500 hover:bg-green-600' },
+    { icon: Clock, text: 'Demande d\'acquisition', color: 'bg-amber-500 hover:bg-amber-600' },
   ];
 
   const equipmentStatus = [
@@ -117,9 +103,6 @@ export default function Dashboard({ darkMode }: DashboardProps) {
           {quickActions.map((action, index) => (
             <button
               key={index}
-              onClick={() => {
-                navigate(action.path);
-              }}
               className={`flex items-center space-x-3 rounded-md px-4 py-3 text-white cursor-pointer ${action.color}`}
             >
               <action.icon className="h-5 w-5" />
@@ -152,13 +135,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
             {/* Liens d'accès rapide sur desktop */}
             <div className="hidden flex-wrap gap-2 sm:flex sm:flex-nowrap sm:space-x-3">
                 {quickActions.map((action, index) => (
-                    <button 
-                      key={index} 
-                      className={`flex items-center space-x-2 rounded-md px-3 py-2 text-sm text-white cursor-pointer ${action.color} md:px-4 md:text-base`}
-                      onClick={() => {
-                        navigate(action.path);
-                      }}
-                    >
+                    <button key={index} className={`flex items-center space-x-2 rounded-md px-3 py-2 text-sm text-white cursor-pointer ${action.color} md:px-4 md:text-base`}>
                       <action.icon className="h-6 w-6" />
                       <span>{action.text}</span>
                     </button>
