@@ -41,7 +41,7 @@
 </head>
 <body>
     <div class="container">
-        <h1 style="color: #2c3e50;">Bienvenue sur la Plateforme de Gestion du Matériel</h1>
+        <h1 style="color: #2c3e50;">Bienvenue sur notre Plateforme de Gestion du Matériel</h1>
 
         <p>Bonjour,</p>
 

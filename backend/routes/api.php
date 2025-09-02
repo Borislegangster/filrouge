@@ -32,6 +32,7 @@ Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/verify-code', [AuthController::class, 'verifyCode']);
 // Reset Password
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+Route::post('/crypt', [AuthController::class, 'crypt']);
 
 /********************************************* Routes protégées *************************************************/
 Route::middleware('auth:sanctum')->group(function () {

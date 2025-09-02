@@ -100,6 +100,7 @@ class UserController extends Controller
             'status' => 'Actif'
         ]);
 
+
         return response()->json([
             'message' => 'Utilisateur activé avec succès',
             'user' => $user

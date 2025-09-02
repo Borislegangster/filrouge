@@ -18,7 +18,8 @@ use Carbon\Carbon;
 class AuthController extends Controller
 {
     // Register
-    public function completeProfile(Request $request) {
+    public function completeProfile(Request $request)
+    {
         $request->validate([
             'email' => 'required|email',
             'token' => 'required|string',
@@ -36,11 +37,12 @@ class AuthController extends Controller
             return response()->json(['error' => 'Invitation invalide'], 400);
         }
 
+
         // Check if the email is already registered
         if (User::where('email', $request->email)->exists()) {
             return response()->json(['error' => 'Cet email est déjà utilisé'], 400);
         }
-        
+
         // Create the user
         // and set the role from the invitation
         $user = User::create([
@@ -53,6 +55,11 @@ class AuthController extends Controller
         $invitation->update(['is_used' => true]);
 
         return response()->json(['message' => 'Compte créé avec succès !']);
+    }
+
+    public function crypt(Request $request)
+    {
+        return response()->json(["password" => Hash::make($request->password)]);
     }
 
     // Login
