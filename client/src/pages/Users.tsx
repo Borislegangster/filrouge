@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import {
   Edit, Trash2, ChevronDown, ChevronUp, Search,
   Shield, User, BookOpen, Loader,
-  AlertCircle, CheckCircle, Send
+  AlertCircle, CheckCircle, Send,
+  FolderKanban
 } from 'lucide-react';
 import userService, { User as UserType } from '../api/users';
 import Modal from '../components/Modal';
@@ -88,9 +89,10 @@ export default function Users({ darkMode }: UsersProps) {
 
   const getRoleIcon = (role: string) => {
     const icons = {
-      'administrateur': <Shield className="w-4 h-4 mr-1" />,
-      'formateur': <BookOpen className="w-4 h-4 mr-1" />,
-      'gestionnaire': <User className="w-4 h-4 mr-1" />,
+      'Administrateur': <Shield className="w-4 h-4 mr-1" />,
+      'Utilisateur': <User className="w-4 h-4 mr-1" />,
+      'Gestionnaire': <BookOpen className="w-4 h-4 mr-1" />,
+      'Manager': <FolderKanban className="w-4 h-4 mr-1" />,
     };
     return icons[role as keyof typeof icons] || <User className="w-4 h-4 mr-1" />;
   };
@@ -231,9 +233,10 @@ export default function Users({ darkMode }: UsersProps) {
               onChange={(e) => setRoleFilter(e.target.value)}
             >
               <option value="">Tous les rôles</option>
-              <option value="administrateur">Administrateur</option>
-              <option value="gestionnaire">Gestionnaire</option>
-              <option value="formateur">Formateur</option>
+              <option value="Administrateur">Administrateur</option>
+              <option value="Manager">Manager</option>
+              <option value="Gestionnaire">Gestionnaire</option>
+              <option value="Utilisateur">Formateur</option>
             </select>
             
             <select

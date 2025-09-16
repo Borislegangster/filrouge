@@ -13,6 +13,7 @@ use App\Http\Controllers\API\V1\CheckoutController;
 use App\Http\Controllers\API\V1\NotificationController;
 use App\Http\Controllers\API\V1\UserController;
 use App\Http\Controllers\API\V1\UserSettingController;
+use App\Http\Controllers\API\V1\ServiceController;
 
 // CSRF cookie route
 Route::get('/sanctum/csrf-cookie', function (Request $request) {
@@ -61,6 +62,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Providers
     Route::apiResource('providers', ProviderController::class);
+    Route::apiResource('services', ServiceController::class)->except(['create', 'edit']);
+    Route::get('/providers/{provider}/services', [ProviderController::class, 'getServices']);
+    Route::post('/providers/{provider}/services/{service}', [ProviderController::class, 'addService']);
+    Route::delete('/providers/{provider}/services/{service}', [ProviderController::class, 'deleteService']);
 
     // Acquisitions
     Route::get('/acquisitions/statuses', [AcquisitionController::class, 'getStatuses']);
@@ -76,12 +81,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('issues')->group(function () {
         Route::get('/', [IssueController::class, 'index']);
         Route::post('/', [IssueController::class, 'store']);
-        Route::get('/{id}', [IssueController::class, 'show']);
-        Route::put('/{id}', [IssueController::class, 'update']);
-        Route::delete('/{id}', [IssueController::class, 'destroy']);
         Route::get('/priorities', [IssueController::class, 'getPriorities']);
         Route::get('/statuses', [IssueController::class, 'getStatuses']);
         Route::get('/stats', [IssueController::class, 'stats']);
+        Route::get('/{id}', [IssueController::class, 'show']);
+        Route::put('/{id}', [IssueController::class, 'update']);
+        Route::delete('/{id}', [IssueController::class, 'destroy']);
         Route::post('/{id}/take-charge', [IssueController::class, 'takeCharge']);
         Route::post('/{id}/mark-as-resolved', [IssueController::class, 'markAsResolved']);
     });

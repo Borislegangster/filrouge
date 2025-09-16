@@ -170,7 +170,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
           <div className="flex items-center justify-between">
             <h2 className="text-base font-semibold md:text-lg">État des équipements</h2>
             <a
-              href="/equipements"
+              href="/equipments"
               className={`text-xs md:text-sm ${darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:underline'}`}
             >
               Voir tous les équipements
@@ -207,7 +207,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
               href="/historique"
               className={`text-xs md:text-sm ${darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:underline'}`}
             >
-              Voir tous l'historique
+              Voir tout l'historique
             </a>
           </div>
 
@@ -227,7 +227,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
                     <div className={`flex h-6 w-6 items-center justify-center rounded-full ${darkMode ? 'bg-blue-900' : 'bg-blue-100'}`}>
                         <MoveRight className="h-3 w-3" />
                     </div>
-                    <p className={`ml-2 text-xs md:text-sm ${darkMode ? 'text-blue-400' : ''}`}>3 micros occupée par monsieur Boris en salle A 101</p>     
+                    <p className={`ml-2 text-xs md:text-sm ${darkMode ? 'text-blue-400' : ''}`}>3 micros occupés par monsieur Boris en salle A 101</p>     
                 </div>
                 <p className={`mt-1 text-xs mx-8 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>il y a 2 heures</p>
             </div>
@@ -247,7 +247,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
                     <div className={`flex h-6 w-6 items-center justify-center rounded-full ${darkMode ? 'bg-green-900' : 'bg-green-100'}`}>
                         <Plus className="h-3 w-3" />
                     </div>
-                    <p className={`ml-2 text-xs md:text-sm ${darkMode ? 'text-green-400' : ''}`}>Nouveau matériel ajouter - Ecran moniteur</p>     
+                    <p className={`ml-2 text-xs md:text-sm ${darkMode ? 'text-green-400' : ''}`}>Nouveau matériel ajouté - Ecran moniteur</p>     
                 </div>
                 <p className={`mt-1 text-xs mx-8 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>il y a 2 heures</p>
             </div>

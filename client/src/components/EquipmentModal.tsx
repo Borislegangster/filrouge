@@ -139,7 +139,7 @@ export default function EquipmentModal({
         </div>
         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
         <div className={`inline-block align-bottom rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
-          <div className={`px-4 pt-5 pb-4 sm:p-6 sm:pb-4 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
+          <div className={`relative px-4 pt-5 pb-4 sm:p-6 sm:pb-4 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
             <div className="flex justify-between items-start">
               <h3 className={`text-lg leading-6 font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                 {equipment ? 'Modifier un équipement' : 'Ajouter un nouvel équipement'}
@@ -184,10 +184,10 @@ export default function EquipmentModal({
                     <option value="">Sélectionnez un type</option>
                     {types.map(type => (
                       <option key={type} value={type}>
-                        <div className="flex items-center">
-                          {getTypeIcon(type)}
+                        {/* <div className="flex items-center"> */}
+                          {/* {getTypeIcon(type)} */}
                           {type}
-                        </div>
+                        {/* </div> */}
                       </option>
                     ))}
                   </select>

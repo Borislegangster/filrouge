@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Provider extends Model
@@ -12,6 +13,8 @@ class Provider extends Model
         'contact_name',
         'email',
         'phone',
+        'phone2',
+        'website',
         'address',
         'description',
         'is_active'
@@ -31,5 +34,13 @@ class Provider extends Model
     public function acquisitions(): HasMany
     {
         return $this->hasMany(Acquisition::class);
+    }
+
+    /**
+     * Get the services of this provider.
+     */
+    public function services(): BelongsToMany
+    {
+        return $this->belongsToMany(Service::class, 'provider_services', 'provider_id', 'service_id');
     }
 }

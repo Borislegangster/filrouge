@@ -24,20 +24,20 @@ class AuthServiceProvider extends ServiceProvider
 
         // Define a policy for managing equipment
         Gate::define('manage-equipment', function ($user) {
-            return in_array($user->role, ['administrateur', 'gestionnaire']);
+            return in_array($user->role, ['Administrateur', 'Gestionnaire']);
         });
         
         Gate::define('view-equipment', function ($user) {
-            return in_array($user->role, ['administrateur', 'gestionnaire', 'formateur']);
+            return in_array($user->role, ['Administrateur', 'Gestionnaire', 'Utilisateur']);
         });
 
         // Define a policy for managing rooms
         Gate::define('manage-rooms', function ($user) {
-            return in_array($user->role, ['administrateur', 'gestionnaire']);
+            return in_array($user->role, ['Administrateur', 'Gestionnaire']);
         });
         
         Gate::define('view-rooms', function ($user) {
-            return in_array($user->role, ['administrateur', 'gestionnaire', 'formateur']);
+            return in_array($user->role, ['Administrateur', 'Gestionnaire', 'Utilisateur']);
         });
     }
 }

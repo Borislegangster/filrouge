@@ -73,7 +73,7 @@ export default function LoginPage({ darkMode }: LoginPageProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) return;
+    if (!validateForm()) console.log("Validation échouée");
 
     setIsLoading(true);
 
@@ -81,10 +81,14 @@ export default function LoginPage({ darkMode }: LoginPageProps) {
       await login(formData.email, formData.password, formData.remember);
       navigate(from, { replace: true });
     } catch (error) {
-      setErrors(prev => ({
-        ...prev,
-        general: 'Email ou mot de passe incorrect'
-      }));
+      // setErrors(prev => ({
+      //   ...prev,
+      //   general: 'Email ou mot de passe incorrect'
+      // }));
+      // setErrors(prev => ({
+      //   ...prev,
+      //   general: 'Email ou mot de passe incorrect'
+      // }));
     } finally {
       setIsLoading(false);
     }
@@ -131,6 +135,7 @@ export default function LoginPage({ darkMode }: LoginPageProps) {
                   onChange={handleChange}
                   className={`w-full pl-10 pr-3 py-2.5 rounded-lg border ${darkMode ? 'bg-gray-700 border-gray-600 text-white focus:ring-blue-500 focus:border-blue-500' : 'bg-white border-gray-300 focus:ring-blue-500 focus:border-blue-500'} ${errors.email ? 'border-red-500' : ''}`}
                   placeholder="email@exemple.com"
+                  required
                 />
               </div>
               {errors.email && (
@@ -154,6 +159,7 @@ export default function LoginPage({ darkMode }: LoginPageProps) {
                   onChange={handleChange}
                   className={`w-full pl-10 pr-10 py-2.5 rounded-lg border ${darkMode ? 'bg-gray-700 border-gray-600 text-white focus:ring-blue-500 focus:border-blue-500' : 'bg-white border-gray-300 focus:ring-blue-500 focus:border-blue-500'} ${errors.password ? 'border-red-500' : ''}`}
                   placeholder="••••••••"
+                  required
                 />
                 <button
                   type="button"

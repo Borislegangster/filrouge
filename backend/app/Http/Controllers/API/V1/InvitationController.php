@@ -21,7 +21,7 @@ class InvitationController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'role' => 'required|in:administrateur,gestionnaire,formateur'
+            'role' => 'required|in:Administrateur,Manager,Gestionnaire,Utilisateur'
         ]);
 
         $token = Str::random(60);
@@ -52,7 +52,7 @@ class InvitationController extends Controller
         
         $request->validate([
             'email' => 'sometimes|email',
-            'role' => 'sometimes|in:administrateur,gestionnaire,formateur',
+            'role' => 'sometimes|in:Administrateur,Manager,Gestionnaire,Utilisateur',
             'is_used' => 'sometimes|boolean'
         ]);
 

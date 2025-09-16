@@ -1,6 +1,6 @@
 import api from './api';
 
-interface User {
+export interface User {
   id?: number;
   name: string;
   email: string;
@@ -60,7 +60,7 @@ export const sendInvitation = async (data: InvitationData): Promise<void> => {
 };
 
 export const getRoles = async (): Promise<string[]> => {
-  return ['administrateur', 'gestionnaire', 'formateur'];
+  return ['Administrateur', 'Manager', 'Gestionnaire', 'Utilisateurateur'];
 };
 
 export default {

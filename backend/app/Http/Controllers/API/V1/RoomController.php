@@ -17,6 +17,7 @@ class RoomController extends Controller
     {
         // Vérifier les permissions
         if (!Gate::allows('view-rooms')) {
+            // abort(403, 'Unauthorized');
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

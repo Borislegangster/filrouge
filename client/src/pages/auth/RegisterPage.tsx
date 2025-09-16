@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "../../api/api";
 import { Lock, User, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { AxiosError } from "axios";
 
 const RegisterPage = () => {
   const [name, setName] = useState("");
@@ -35,8 +36,9 @@ const RegisterPage = () => {
         password_confirmation: passwordConfirmation,
       });
       navigate("/login");
-    } catch (err) {
-      setError("Erreur lors de la création du compte.");
+    } catch (err: unknown | typeof AxiosError) {
+      console.log(err);      
+      setError("Le mot de passe doit contenir au moins 8 caractères"); //"Erreur lors de la création du compte.");
     } finally {
       setIsLoading(false);
     }

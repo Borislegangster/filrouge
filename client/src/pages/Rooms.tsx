@@ -169,7 +169,7 @@ export default function Rooms({ darkMode }: RoomsProps) {
               </svg>
             )}
           </button>
-          {(user?.role === 'administrateur' || user?.role === 'gestionnaire') && (
+          {(user?.role === 'Administrateur' || user?.role === 'Gestionnaire') && (
             <button 
               onClick={() => {
                 setCurrentRoom(null);
@@ -256,7 +256,7 @@ export default function Rooms({ darkMode }: RoomsProps) {
                       )}
                     </div>
                   </div>
-                  {(user?.role === 'administrateur' || user?.role === 'gestionnaire') && (
+                  {(user?.role === 'Administrateur' || user?.role === 'Gestionnaire') && (
                     <div className="flex gap-1">
                       <button 
                         onClick={() => handleDelete(room.id)}
@@ -306,7 +306,7 @@ export default function Rooms({ darkMode }: RoomsProps) {
                 )}
               </div>
               <div className={`px-6 py-4 flex justify-end space-x-3 ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                {(user?.role === 'administrateur' || user?.role === 'gestionnaire') && (
+                {(user?.role === 'Administrateur' || user?.role === 'Gestionnaire') && (
                   <button 
                     onClick={() => {
                       setCurrentRoom(room);
@@ -427,7 +427,7 @@ export default function Rooms({ darkMode }: RoomsProps) {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-4">
-                        {(user?.role === 'administrateur' || user?.role === 'gestionnaire') && (
+                        {(user?.role === 'Administrateur' || user?.role === 'Gestionnaire') && (
                           <>
                             <button 
                               onClick={() => {
